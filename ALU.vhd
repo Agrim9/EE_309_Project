@@ -109,7 +109,7 @@ architecture behave of b16_adder is
 begin
 	
 	
-   zero_out <= z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15);
+   zero_out <= not (z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15));
    
    o1:  OneBitAdder port map(a=>x(0)  ,b=>y(0)  ,cin=>'0'   ,s=>z(0)  ,cout=>g(1));
    o2:  OneBitAdder port map(a=>x(1)  ,b=>y(1)  ,cin=>g(1)  ,s=>z(1)  ,cout=>g(2));
@@ -126,7 +126,7 @@ begin
    o13: OneBitAdder port map(a=>x(12) ,b=>y(12) ,cin=>g(12) ,s=>z(12) ,cout=>g(13));
    o14: OneBitAdder port map(a=>x(13) ,b=>y(13) ,cin=>g(13) ,s=>z(13) ,cout=>g(14));
    o15: OneBitAdder port map(a=>x(14) ,b=>y(14) ,cin=>g(14) ,s=>z(14) ,cout=>g(15));
-   o16: OneBitAdder port map(a=>x(15) ,b=>y(15) ,cin=>g(15) ,s=>z(15) ,cout=> carry_out );
+   o16: OneBitAdder port map(a=>x(15) ,b=>y(15) ,cin=>g(15) ,s=>z(15) ,cout=> carry_out );  -- caary bit out here
 
    s <= z;
    
@@ -152,7 +152,7 @@ architecture behave of b16_nander is
 begin
 	
 	
-   zero_out <= z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15);
+   zero_out <= not (z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15));
    z <=  x nand y;
    s <= z;
    carry_out <= '0';
@@ -178,7 +178,7 @@ architecture behave of b16_xorer is
 begin
 	
 	
-   zero_out <= z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15);
+   zero_out <= not (z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15));
    z <=  x xor y;
    s <= z;
    carry_out <= '0';
