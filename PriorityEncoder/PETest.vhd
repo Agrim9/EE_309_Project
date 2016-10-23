@@ -51,7 +51,6 @@ function to_string_bit(x: std_logic) return character is
 component PriorityEncoder
 port ( x : in std_logic_vector(15 downto 0);
 	s : out std_logic_vector(2 downto 0);
-	loc: out integer;
 	d: out std_logic_vector(15 downto 0);
 	err_flag: out std_logic	 ) ;
 end component ;
@@ -79,8 +78,6 @@ wait for 30 ns;
  write(OUTPUT_LINE,to_string_bit(N));
  write(OUTPUT_LINE,to_string("   "));
  write(OUTPUT_LINE,to_string_vec(d));
- write(OUTPUT_LINE,to_string("   "));
- write(OUTPUT_LINE,integer'image(loc));
  writeline(OUTFILE, OUTPUT_LINE);
  wait for 5 ns;	
 end loop ;
@@ -88,5 +85,5 @@ end process ;
 
 dut : PriorityEncoder
 port map ( x=>x ,
-s=>s ,loc=>loc, d=>d, err_flag => N ) ;
+s=>s , d=>d, err_flag => N ) ;
 end test ;

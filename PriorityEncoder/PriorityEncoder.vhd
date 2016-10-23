@@ -9,8 +9,7 @@ use ieee.numeric_std.all;
 -----------------------------------------------------------------------------
 entity PriorityEncoder is
 port ( x : in std_logic_vector(15 downto 0);
-	s : out std_logic_vector(2 downto 0);
-	loc: out integer;	
+	s : out std_logic_vector(2 downto 0);	
 	d: out std_logic_vector(15 downto 0);
 	err_flag: out std_logic	 ) ;
 end PriorityEncoder ;
@@ -58,9 +57,9 @@ s1(2) <= ( x(4) and not x(3) and not x(2) and
 	and not x(2) and not x(1) and not x(0) ) ;
 s<=s1;
 location <= to_int(s1);
-loc<=location;
 
-process(location)
+
+process(location,x)
 variable dat: std_logic_vector (15 downto 0);
 variable gengar: std_logic:='0';
 variable count: integer:=0;
