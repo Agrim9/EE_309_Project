@@ -4,7 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 -- MUX1, MUX2, DataRegister, Regfile, ALU, PriorityEncoder, SignExtend_6, SignExtend_9, padder, ADD_1
 entity datapath is
 port(T: in std_logic_vector(31 downto 0);
-	  P: out std_logic_vector(2 downto 0);
+	  P: out std_logic_vector(4 downto 0);
 	  Mem_Dout: in std_logic_vector(15 downto 0);  -- data output from memory 
 	  Mem_Din,Mem_Ain: out std_logic_vector(15 downto 0);    -- data and address input to memory
 	  CLK : in std_logic
@@ -87,7 +87,6 @@ end component Add_1;
 component PriorityEncoder is
 port ( x : in std_logic_vector(15 downto 0);	--T2_sig
 	    s : out std_logic_vector(2 downto 0);	-- PE1
-		--loc: out integer;	 to be removed later
 		 d: out std_logic_vector(15 downto 0); -- PE2
 		 err_flag: out std_logic	) ;
 end component ;
@@ -96,7 +95,7 @@ signal d1_sig,d2_sig,d5_sig,IR_sig,T1_sig,T2_sig,T3_sig,T4_sig,T1_in:  std_logic
 signal M1_out,M2_out,M3_out,M4_out,M5_out,M6_out,M7_out,M8_out,M9_out: std_logic_vector(15 downto 0);
 signal M10_out,M11_out,M12_out : std_logic_vector(2 downto 0);
 signal PAD_sig,alu_a_sig,alu_b_sig,alu_out_sig,None_sig,SE6_out,SE9_out,PE2_sig: std_logic_vector(15 downto 0);
-signal C_sig,Z_sig,ERR_sig: std_logic_vector(0 downto 0);
+signal C_sig,Z_sig: std_logic_vector(0 downto 0);
 signal PE1_sig: STD_logic_vector(2 downto 0);
 
 
@@ -106,7 +105,7 @@ Mem_Ain<=M1_out;
 Mem_Din<=T3_sig;
 
 None_sig<="0000000000000000";
-P(2)<=Err_sig(0);
+
 IR : DataRegister 	generic map(data_width => 16) port map(Din =>Mem_Dout , Dout =>IR_sig	, clk =>CLK , enable =>T(22));
 
 RF : regfile port map(
@@ -140,7 +139,7 @@ PE : PriorityEncoder port map(
 	x =>T2_sig,
 	s => PE1_sig,
 	d =>PE2_sig,
-	err_flag=>ERR_sig (0)
+	err_flag=>P(2)
 	);
 ALU0 : ALU port map(
 			alu_a=> M3_out,
@@ -156,9 +155,10 @@ T1 : DataRegister 	generic map(data_width => 16) port map(Din =>T1_in , Dout => 
 T2 : DataRegister 	generic map(data_width => 16) port map(Din =>M5_out, Dout =>T2_sig 	, clk =>CLK , enable =>T(19));
 T3 : DataRegister 	generic map(data_width => 16) port map(Din =>M6_out, Dout => T3_sig	, clk =>CLK , enable =>T(20));
 T4 : DataRegister 	generic map(data_width => 16) port map(Din => M2_out, Dout =>T4_sig 	, clk =>CLK , enable =>T(21));
-C : DataRegister 	generic map(data_width => 1) port map(Din =>C_sig, Dout(0) => P(0), clk =>CLK , enable =>T(23));
-Z : DataRegister 	generic map(data_width => 1) port map(Din =>Z_sig, Dout(0) => P(1), clk =>CLK , enable =>T(24));
-
+C : DataRegister 	generic map(data_width => 1) port map(Din =>C_sig, Dout(0) => P(1), clk =>CLK , enable =>T(23));
+Z : DataRegister 	generic map(data_width => 1) port map(Din =>Z_sig, Dout(0) => P(0), clk =>CLK , enable =>T(24));
+P(3)<=Z_sig(0);
+P(4)<= '1' when T3_sig="0000000000000000" else '0';		--Gengar Wishes!*!
 SE9 : SignExtend_9 port map(In_9=>IR_sig(8 downto 0),OUT_16=>SE9_out); 
 SE6 : SignExtend_6 port map(In_6=>IR_sig(5 downto 0),OUT_16=>SE6_out);
 PAD : padder port map(I=>IR_sig(8 downto 0),O=>Pad_sig);
@@ -239,17 +239,8 @@ end entity SignExtend_9;
 
 architecture dataflow of SignExtend_9 is
 begin
-	process(IN_9)
-	begin
-		OUT_16(16) <= IN_9(9);		-- add the sign bit
 		OUT_16(8 downto 1)<=IN_9(8 downto 1); -- add the data 
-		
-		if(IN_9(9)='1') then		-- number is -ve
-			OUT_16(15 downto 9)<="1111111";		-- add one to all places for twos complement representation
-		else
-			OUT_16(15 downto 9)<="0000000";
-		end if;
-		end process;
+		OUT_16(16 downto 9)<="11111111" when IN_9(9)='1' else "00000000";		-- add one to all places for twos complement representation
 end dataflow;
 
 -------------------------------------------------------------
@@ -266,17 +257,8 @@ end entity SignExtend_6;
 
 architecture dataflow of SignExtend_6 is
 	begin
-	process(IN_6)
-	begin
-		OUT_16(16) <= IN_6(6);		-- add the sign bit
-		OUT_16(5 downto 1)<=IN_6(5 downto 1); -- add the data 
-		
-		if(IN_6(6)='1') then		-- number is -ve
-			OUT_16(15 downto 6)<="1111111111";		-- add one to all places for twos complement representation
-		else
-			OUT_16(15 downto 6)<="0000000000";
-		end if;
-		end process;
+	OUT_16(5 downto 1)<=IN_6(5 downto 1); -- add the data 
+		OUT_16(16 downto 6)<="11111111111" when IN_6(6)='1' else "00000000000";		-- add one to all places for twos complement representation
 end dataflow;
 -------------------------------------------------------------
 library IEEE;
@@ -285,8 +267,8 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity Add_1 is 
 port(
-	I: in std_logic_vector(16 downto 1);
-	O: out std_logic_vector(16 downto 1)
+	I: in std_logic_vector(15 downto 0);
+	O: out std_logic_vector(15 downto 0)
 	);
 end entity Add_1;
 
