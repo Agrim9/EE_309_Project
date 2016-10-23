@@ -13,7 +13,7 @@ package ALU_Components is
 	component b16_conditional_repeater is
 	port (  
 			input: in std_logic_vector(15 downto 0);            -- operand 1
-			output: in std_logic_vector(15 downto 0);			-- operand 2
+			output: out std_logic_vector(15 downto 0);			-- operand 2
 			
 			carry_in: in std_logic;							
 			zero_in: in std_logic;							

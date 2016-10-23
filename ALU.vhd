@@ -18,8 +18,8 @@ entity ALU is
 end entity ALU;
 
 architecture behave of ALU  is
-	signal ga, gn, gx, fa, fn, fx: std_logic_vector(15 downto 0); 
-	signal gca, gcn, gcx, gza, gzn, gzx, fca, fcn, fcx, fza, fzn, fzx: std_logic; 
+	signal gaa,gnn,gxx,ga, gn, gx, fa, fn, fx: std_logic_vector(15 downto 0); 
+	signal gca,gcaa, gcn,gcnn,gcxx, gcx,gzaa, gza,gznn, gzn,gzxx, gzx, fca, fcn, fcx, fza, fzn, fzx: std_logic; 	
 	signal t1, t2: std_logic;
 	
 begin
@@ -29,6 +29,7 @@ begin
 	
 	t1 <= (not op_code(1)) and (not op_code(0));
 	t2 <= (not op_code(1)) and (    op_code(0));
+		
 	
 	Add_out: b16_conditional_repeater port map (op => t1,         input => ga, output => fa, carry_in => gca, zero_in => gza, carry_out => fca, zero_out => fza);
 	Nand_out: b16_conditional_repeater port map (op => t2,        input => gn, output => fn, carry_in => gcn, zero_in => gzn, carry_out => fcn, zero_out => fzn);
@@ -54,32 +55,34 @@ entity b16_conditional_repeater is
 			carry_out: out std_logic;							
 			zero_out: out std_logic;							
 			-- opcode
-			op: std_logic						-- (00)add, (01)nand, (1x) xor
+			op: in std_logic						-- (00)add, (01)nand, (1x) xor
 	
 			);
 end entity;
 
 architecture behave of b16_conditional_repeater is
+signal outputsig: std_logic_vector(15 downto 0);
 begin
 	
 	carry_out <= carry_in and op;
 	zero_out <= zero_in and op;
-	output(15) <= input(15) and op;
-	output(14) <= input(14) and op;
-	output(13) <= input(13) and op;
-	output(12) <= input(12) and op;
-	output(11) <= input(11) and op;
-	output(10) <= input(10) and op;
-	output(9) <= input(9) and op;
-	output(8) <= input(8) and op;
-	output(7) <= input(7) and op;
-	output(6) <= input(6) and op;
-	output(5) <= input(5) and op;
-	output(4) <= input(4) and op;
-	output(3) <= input(3) and op;
-	output(2) <= input(2) and op;
-	output(1) <= input(1) and op;
-	output(0) <= input(0) and op;
+	outputsig(15) <= input(15) and op;
+	outputsig(14) <= input(14) and op;
+	outputsig(13) <= input(13) and op;
+	outputsig(12) <= input(12) and op;
+	outputsig(11) <= input(11) and op;
+	outputsig(10) <= input(10) and op;
+	outputsig(9) <= input(9) and op;
+	outputsig(8) <= input(8) and op;
+	outputsig(7) <= input(7) and op;
+	outputsig(6) <= input(6) and op;
+	outputsig(5) <= input(5) and op;
+	outputsig(4) <= input(4) and op;
+	outputsig(3) <= input(3) and op;
+	outputsig(2) <= input(2) and op;
+	outputsig(1) <= input(1) and op;
+	outputsig(0) <= input(0) and op;
+	output<=outputsig;
 
 end behave;
 
@@ -109,7 +112,7 @@ architecture behave of b16_adder is
 begin
 	
 	
-   zero_out <= not (z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15));
+   zero_out <=  (not z(0) and not z(1) and not z(2) and not z(3) and not z(4) and not z(5) and not z(6) and not z(7) and not z(8) and not z(9) and not z(10) and not z(11) and not z(12) and not z(13) and not z(14) and not z(15));
    
    o1:  OneBitAdder port map(a=>x(0)  ,b=>y(0)  ,cin=>'0'   ,s=>z(0)  ,cout=>g(1));
    o2:  OneBitAdder port map(a=>x(1)  ,b=>y(1)  ,cin=>g(1)  ,s=>z(1)  ,cout=>g(2));
@@ -152,7 +155,7 @@ architecture behave of b16_nander is
 begin
 	
 	
-   zero_out <= not (z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15));
+   zero_out <=  (not z(0) and not z(1) and not z(2) and not z(3) and not z(4) and not z(5) and not z(6) and not z(7) and not z(8) and not z(9) and not z(10) and not z(11) and not z(12) and not z(13) and not z(14) and not z(15));
    z <=  x nand y;
    s <= z;
    carry_out <= '0';
@@ -178,9 +181,10 @@ architecture behave of b16_xorer is
 begin
 	
 	
-   zero_out <= not (z(0) and z(1) and z(2) and z(3) and z(4) and z(5) and z(6) and z(7) and z(8) and z(9) and z(10) and z(11) and z(12) and z(13) and z(14) and z(15));
+   
    z <=  x xor y;
-   s <= z;
+   zero_out <=  '1' when z="0000000000000000" else '0';
+	s <= z;
    carry_out <= '0';
    
 end behave;
