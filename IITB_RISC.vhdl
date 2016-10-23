@@ -33,9 +33,10 @@ end entity IITB_RISC;
 
 
 architecture Struct of IITB_RISC is
-   signal T_arr: std_logic_vector(25 downto 0);
+   signal T_arr: std_logic_vector(0 to 31);
    signal IR_val: std_logic_vector(15 downto 0);
    signal Carry,Zero: std_logic;
+   signal P: std_logic_vector(1 downto 0);
 begin
 
     CP: ControlPath 
@@ -43,6 +44,7 @@ begin
 			IR_val => IR_val,
 			LM_last => LM_last,
 			Carry => Carry,
+			P => P,
 			Zero => Zero,
 			start => start,
 			done => done,
@@ -70,7 +72,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 entity ControlPath is
 	port (
-		T_arr: out std_logic_vector(25 downto 0);
+		T_arr: out std_logic_vector(0 to 31);
+		P: in std_logic_vector(1 downto 0);
 		IR_val: in std_logic(15 downto 0);
 		LM_last: in std_logic;
 		carry: in std_logic;
@@ -82,11 +85,11 @@ entity ControlPath is
 end entity;
 
 architecture Behave of ControlPath is
-   type FsmState is (S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12,S13,S14,S15,S16,S17,S18);
+   type FsmState is (S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12,S13,S14,S15,S16,S17,S18,rst);
    signal fsm_state : FsmState;
 begin
 
-   process(fsm_state, start, IR_val,carry,zero,LM_last, clk, reset)
+   process(fsm_state, start, IR_val,carry,zero,LM_last,P, clk, reset)
       variable next_state: FsmState;
       variable Tvar: std_logic_vector(0 to 31);
       variable Instr_code : std_logic_vector(3 downto 0);
@@ -118,11 +121,13 @@ begin
 		  next_state := S5;
 		end if;
 		Tvar := "10000001000000000010001001000000";
+		done_state := '0';
           when S1 =>
 		logic1 := (zero and (not IR_val(1))) or ((not IR_val(1))and(not IR_val(0))) or (carry and (not IR_val(0)));
 		if(logic1 = '1') then
                next_state := S2;
 		else 
+		done_state = '1';
 		next_state := S0;
 		end if;
 		Tvar := "00000010000100110001100000000000";
@@ -136,21 +141,27 @@ begin
 		Tvar(27) :=Instr_code(3);		
 		if(Instr_code="1100") then	
 		Tvar(29) :='1';
-		Tvar(30) := '0';
+		Tvar(30) :='0';
+		
 		elsif(Instr_code="0010")then
+		Tvar(23) := '1';
+		Tvar(24) := '0';
 		Tvar(29) :='0';
 		Tvar(30) := '1';
 		elsif((Instr_code = "0000") or (Instr_code="0001")) then 
-		Tvar(29) :='0';
+		Tvar(23) := '1';
+		Tvar(24) := '1';
+		Tvar(29) := '0';
 		Tvar(30) := '0';
 		else 
 		Tvar(29) :='1';
 		Tvar(30) := '1';
 		end if; 
 	  when S3 =>
+		done_state = '1';
                next_state := S0;
 		Tvar := "00000000000100000100000000000000"; 
-		Tvar(27) :=((not (IR_val(9) and IR_val(10) and IR_val(11))) and (not Instr_code(3))) or ((not Zero) and (Instr_code(3)));
+		Tvar(27) :=((not (IR_val(9) and IR_val(10) and IR_val(11))) and (not Instr_code(3))) or ((not P(0)) and (Instr_code(3)));
 		Tvar(28) := not Instr_code(3);             
 	  when S4 =>
                next_state := S2;
@@ -173,6 +184,7 @@ begin
 		elsif ((Instr_code = "0111") and (LM_last='0')) then
 		  next_state :=S8;
 		elsif (last='1') then 
+		done_state = '1';		
 		  next_state :=S0;
 		end if;
                Tvar := "00100011000110000001010000000000";	   
@@ -183,6 +195,7 @@ begin
                Tvar := "00000000000000001000100000000000";
 
 	  when S9 =>
+		done_state = '1';
                next_state := S0;
                Tvar := "00000000000101000100000000001000";
 	       Tvar(27) :=not (IR_val(9) and IR_val(10) and IR_val(11));
@@ -202,14 +215,17 @@ begin
 	  when S12 =>
                next_state := S13;
                 Tvar := "00000000010000000000100001000000";
+		Tvar(24) := P(1);
 	  
        	  when S13 =>
-               next_state := S0;
+		done_state = '1';               
+		next_state := S0;
 		Tvar := "00000000000110000100000000001000";
 		Tvar(27) :=not (IR_val(9) and IR_val(10) and IR_val(11));
 	 
 	  when S14 =>
-               next_state := S0;
+		done_state = '1';
+                next_state := S0;
 		Tvar := "00000000000100000000000000110000";
 
 	  when S15 =>
@@ -217,6 +233,7 @@ begin
 		Tvar := "01111000000000000000010000000000";
 
 	  when S16 =>
+		done_state = '1';
                next_state := S0;
                 Tvar := "00000000000011000100000000011000";
 		
@@ -227,10 +244,18 @@ begin
 	  when S18 =>
                next_state := S2;
 		Tvar := "01111010000000111001110000000000";
+	 when rst =>
+		if(start_state ='1') then
+		next_state := S0;
+		else 
+		next_state :=rst;
+		end if;
+		Tvar := "00000000000000000000000000010001";
+
             
      end case;
 
-     T_arr=Tvar;
+     T_arr<=Tvar;
   
      if(clk'event and (clk = '1')) then
 	if(reset = '1') then
