@@ -3,11 +3,12 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 -- MUX1, MUX2, DataRegister, Regfile, ALU, PriorityEncoder, SignExtend_6, SignExtend_9, padder, ADD_1
 entity datapath is
-port(T: in std_logic_vector(31 downto 0);
+port(T: in std_logic_vector(0 to 31);
 	  P: out std_logic_vector(4 downto 0);
 	  Mem_Dout: in std_logic_vector(15 downto 0);  -- data output from memory 
 	  Mem_Din,Mem_Ain: out std_logic_vector(15 downto 0);    -- data and address input to memory
-	  CLK : in std_logic
+	  CLK : in std_logic;
+	  IR_val: out std_logic_vector (15 downto 0)
 	  );
 end entity datapath;
 
@@ -107,6 +108,10 @@ Mem_Din<=T3_sig;
 None_sig<="0000000000000000";
 
 IR : DataRegister 	generic map(data_width => 16) port map(Din =>Mem_Dout , Dout =>IR_sig	, clk =>CLK , enable =>T(22));
+
+IR_val<= IR_sig;
+
+
 
 RF : regfile port map(
 	clk =>CLK,
@@ -274,6 +279,6 @@ end entity Add_1;
 
 architecture Dataflow of Add_1 is
 begin
-	O<= std_logic_vector(signed(I)+1);
+	O<= std_logic_vector(unsigned(I)+1);
 end dataflow;
 ---------------------------------------------------------------		 
