@@ -31,21 +31,21 @@ function CONV_INTEGER(x: std_logic_vector) return integer is
       return(ret_val);
   end CONV_INTEGER;
 begin
-
+	dataout <= ram(CONV_INTEGER(address)); 
   RamProc: process(clock) is
   begin
     if rising_edge(clock) then
       if writeEN = '1' then
         ram(CONV_INTEGER(address)) <= datain;
-	dataout <= "0000000000000000"; 
-	else 
-	read_address <= address; 
-	dataout <= ram(CONV_INTEGER(read_address));     
+	--dataout <= "0000000000000000"; 
+	--else 
+	--dataout <= ram(CONV_INTEGER(address));  
+	    
 	end if;
       
 	
     end if;
-  report "STUCK HERE";
+  
   end process RamProc;
 
   

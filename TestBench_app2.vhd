@@ -100,9 +100,9 @@ begin
   begin
 	
 	
-  --wait until clk = '1';
+  wait until clk = '1';
     while not endfile(INFILE) loop 
-    	  
+    	  wait until clk = '0';
           LINE_COUNT := LINE_COUNT + 1;
 			
 			report "NEW INNPUT READ";
@@ -120,7 +120,6 @@ begin
       start_mc<= not to_std_logic(mem_bit_var);
       reset <= to_std_logic(mem_bit_var);
 	 
-	 wait until clk = '0';
           --------------------------------------
 	     while (true) loop
              wait until clk='1';

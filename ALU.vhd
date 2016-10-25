@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
-use work.ALU_Components.all;
+use work.IITB_RISC_Components.all;
 
 entity ALU is
 	port (  -- operands and result

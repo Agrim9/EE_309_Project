@@ -42,7 +42,9 @@ begin
 	  Mem_Dout=>Mem_Dout,  -- data output from memory 
 	  Mem_Din=>Mem_Din,
 	  Mem_Ain=>Mem_Ain,     -- data and address input to memory
-	  CLK=>clk);
+	  CLK=>clk,
+	  IR_val => IR_val	
+	);
 	
 	bitwise_and_i <= (others => mem_bit);
 	bitwise_and_d <= (others => (not mem_bit));

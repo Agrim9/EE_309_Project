@@ -34,6 +34,7 @@ component DataRegister is
 	      clk, enable: in std_logic);
 end component;
 component regfile is port(
+	done : out std_logic;
 	clk : in std_logic;
 	pc_wr : in std_logic;
 	rf_wr : in std_logic;
@@ -92,13 +93,13 @@ port ( x : in std_logic_vector(15 downto 0);	--T2_sig
 		 err_flag: out std_logic	) ;
 end component ;
 ------------------------------------------------
-signal d1_sig,d2_sig,d5_sig,IR_sig,T1_sig,T2_sig,T3_sig,T4_sig,T1_in:  std_logic_vector(15 downto 0);
-signal M1_out,M2_out,M3_out,M4_out,M5_out,M6_out,M7_out,M8_out,M9_out: std_logic_vector(15 downto 0);
-signal M10_out,M11_out,M12_out : std_logic_vector(2 downto 0);
-signal PAD_sig,alu_a_sig,alu_b_sig,alu_out_sig,None_sig,SE6_out,SE9_out,PE2_sig: std_logic_vector(15 downto 0);
-signal C_sig,Z_sig: std_logic_vector(0 downto 0);
-signal PE1_sig: STD_logic_vector(2 downto 0);
-
+signal d1_sig,d2_sig,d5_sig,IR_sig,T1_sig,T2_sig,T3_sig,T4_sig,T1_in:  std_logic_vector(15 downto 0):="0000000000000000";
+signal M1_out,M2_out,M3_out,M4_out,M5_out,M6_out,M7_out,M8_out,M9_out: std_logic_vector(15 downto 0):="0000000000000000";
+signal M10_out,M11_out,M12_out : std_logic_vector(2 downto 0):="000";
+signal PAD_sig,alu_a_sig,alu_b_sig,alu_out_sig,None_sig,SE6_out,SE9_out,PE2_sig: std_logic_vector(15 downto 0):="0000000000000000";
+signal C_sig,Z_sig: std_logic_vector(0 downto 0):="0";
+signal PE1_sig: STD_logic_vector(2 downto 0):="000";
+signal done: std_logic:='0';
 
 begin
 
@@ -124,7 +125,8 @@ RF : regfile port map(
 	d2rf  =>d2_sig,
 	d3rf  =>M9_out,
 	d4rf  =>M8_out,
-	d5rf  =>d5_sig
+	d5rf  =>d5_sig,
+	done => done
 );
 
 M1 : Mux1 generic map (bits=>16) port map(I0=>T4_sig,I1=>D5_sig,O=>M1_out,SEl=>T(0));

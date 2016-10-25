@@ -32,7 +32,8 @@ port(T: in std_logic_vector(31 downto 0);
 	  P: out std_logic_vector(4 downto 0);
 	  Mem_Dout: in std_logic_vector(15 downto 0);  -- data output from memory 
 	  Mem_Din,Mem_Ain: out std_logic_vector(15 downto 0);    -- data and address input to memory
-	  CLK : in std_logic
+	  CLK : in std_logic;
+	  IR_val:out std_logic_vector(15 downto 0)
 	  );
 end component;
 
