@@ -138,7 +138,7 @@ while(true)
     cin>>address;
     opfile<<conv_16(address)<<endl;
   }
-  else break;
+  else {opfile<<"0 0000000000000000 0000000000000000";break;}
 }
 opfile.close();
 return 1;
