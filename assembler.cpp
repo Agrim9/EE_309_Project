@@ -35,7 +35,10 @@ string str,reg1,opcode,reg2,reg3,str_9;
 ofstream opfile;
 int address,data_6,data_9;
 char a;
-opfile.open("trace1.txt");
+char* filename=new char(25);
+cout<<"Enter File Name -> ";
+cin>>filename;
+opfile.open(filename);
 while(true)
   {
   cout<<"Instruction(I) or data(D) ?";
@@ -45,7 +48,7 @@ while(true)
   cout<<"Enter Op Code->";
   cin>>str;
   if(str=="EXIT") {opfile<<"0 0000000000000000 0000000000000000";break;}
-  opfile<<"1  ";
+  opfile<<"1 ";
     if((str=="ADD")||(str=="ADC")||(str=="ADZ")||(str=="NDU")||(str=="NDC")||(str=="NDZ"))
       {
         if((str=="ADD")||(str=="ADC")||(str=="ADZ"))
@@ -110,16 +113,11 @@ while(true)
         cout<<"Enter Reg1(Binary)->";
         cin>>reg1;
         opcode+=reg1;
-        if((str=="LM")||(str=="SM")){
-        cout<<"Enter 9 bit load string(Binary) ->";
-        cin>>str_9;
-        opcode+=str_9;}
-        else
-        {
+        
         cout<<"Enter 9 bit immediate data(Decimal) ->";
         cin>>data_9;
         opcode+=conv_9(data_9);
-        }
+
         cout<<"The Op Code is ->"<<opcode<<endl;
         opfile<<opcode<<" ";
       }

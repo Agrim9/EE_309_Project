@@ -58,7 +58,7 @@ begin
                		Tvar := "00000010100000100001100000000000";
 		elsif (Instr_code = "1100") then
 		  	next_state := S1;
-			Tvar := "01111010000000111001110000000000";		
+			Tvar := "01111010000100111001110000010000";		
 		elsif (Instr_code = "1000") then
 		  	next_state := S10;
 			Tvar := "01111000000000000000010000000000";	
@@ -92,7 +92,8 @@ begin
 		Tvar(27) :=Instr_code(3);		
 		if(Instr_code="1100") then	
 		Tvar(29) :='1';
-		Tvar(30) :='0';		
+		Tvar(30) :='0';
+		Tvar(27) := P(3);		
 		elsif(Instr_code="0010")then
 		Tvar(23) := '1';
 		Tvar(24) := '0';
@@ -113,7 +114,7 @@ begin
 		done_var := '1';
                next_state := S0;
 		Tvar := "00000000000100000100000000000000"; 
-		Tvar(27) :=((not (IR_val(9) and IR_val(10) and IR_val(11))) and (not Instr_code(3))) or ((not P(3)) and (Instr_code(3)));
+		Tvar(27) :=((not (IR_val(9) and IR_val(10) and IR_val(11))) and (not Instr_code(3)));
 		Tvar(28) := not Instr_code(3);             
                
 
