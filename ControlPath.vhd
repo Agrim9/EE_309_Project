@@ -64,7 +64,7 @@ begin
 			Tvar := "01111000000000000000010000000000";	
 		elsif (Instr_code = "1001") then
 		  	next_state := S10;
-			Tvar := "01000000000000100000000000000000";		
+			Tvar := "01000000000000100000010000000000";		
 		elsif (Instr_code = "0011") then
 			report "LHI";		  	
 			done_var := '1';
@@ -129,13 +129,19 @@ begin
 		elsif ((Instr_code = "0111") and (P(2)='0')) then
 		  next_state :=S5;
 		elsif (P(2)='1') then 
-		done_var := '1';		
-		  next_state :=S0;
+			done_var := '1';		
+		 	next_state :=S0;
 		end if;
                Tvar := "00100011000110000001010000000000";	   
-		Tvar(26) := Instr_code(0);
-		Tvar(27) := P(2) and (not IR_val(6));
-   	  when S5 =>
+		Tvar(26) := Instr_code(0);					-- mem write
+		if ((Instr_code = "0110") and (P(2)='1')) then                  -- pc write logic		
+			Tvar(27) := (not IR_val(7));				--load	
+		elsif	((Instr_code = "0111") and (P(2)='1')) then			
+			Tvar(27) := '1';					--store
+		end if;
+		Tvar(28):=not Instr_code(0);					--rf write
+   	  
+	when S5 =>
 		report "@S5";
                next_state := S4;
                Tvar := "00000000000000001000100000000000";
