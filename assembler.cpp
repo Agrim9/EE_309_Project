@@ -58,7 +58,7 @@ while(true)
         cout<<"Enter Reg2(Binary)->";
         cin>>reg2;
         opcode+=reg2;
-        cout<<"Enter Reg1(Binary)->";
+        cout<<"Enter Reg3(Binary)->";
         cin>>reg3;
         opcode+=reg3;
         if((str=="ADD")||(str=="NDU"))
