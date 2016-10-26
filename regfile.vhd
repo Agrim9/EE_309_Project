@@ -18,7 +18,7 @@ end regfile;
 
 ARCHITECTURE Behavorial of regfile IS
 	type registerFile is array(0 to 7) of std_logic_vector(15 downto 0);
-	SIGNAL RF:registerFile;
+	SIGNAL RF:registerFile:= (others=>(others => '0'));
 	SIGNAL done_1,done_2: std_logic := '0';
 
 function CONV_INTEGER(x: std_logic_vector) return integer is
