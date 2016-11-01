@@ -50,10 +50,9 @@ BEGIN
 			RF(7) <= d4rf;
 		--report "yo2";	
 		end if; 
-	done_1<='1';
 	
 	end if;
-	
+	done_1<='1';
 	end process;
 
 	
