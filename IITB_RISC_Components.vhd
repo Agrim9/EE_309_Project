@@ -4,14 +4,26 @@ USE IEEE.STD_LOGIC_1164.ALL;
 
 package IITB_RISC_Components is
 
---Grand Entity
+--Grand Entity for hardware testing
+component Pilot is
+port 
+(
+reset: in std_logic;
+clk: in std_logic;
+clk_50: in std_logic
+
+);
+end component;
+
+--Grand Entity (for file based testbench)
 component IITB_RISC is port(
-	start_mc: in std_logic;
-	reset: in std_logic;
+	rst: in std_logic;
 	clk: in std_logic;
+	clk_50: in std_logic;
 	instr_data_in: in std_logic_vector(15 downto 0);
 	addr_wr: in std_logic_vector(15 downto 0);
-	mem_bit: in std_logic
+	mem_bit: in std_logic;
+	load_mem: in std_logic
 );
 end component;
 
@@ -61,16 +73,17 @@ port ( x : in std_logic_vector(15 downto 0);
 end component;
 
 
-component RAM is
+component hRAM is
   port (
     clock   : in  std_logic;
+    load_mem: in std_logic;
+    mem_loaded : out std_logic;
     writeEN : in  std_logic;
-    address : in  std_logic_vector;
-    datain  : in  std_logic_vector;
-    dataout : out std_logic_vector
+    address : in  std_logic_vector(0 to 15);
+    datain  : in  std_logic_vector(15 downto 0);
+    dataout : out std_logic_vector(15 downto 0)
   );
 end component;
-
 --Babbajji ke ALU ke kamaal
 component OneBitAdder is
 		port (a, b, cin: in std_logic; s,cout : out std_logic);

@@ -2,16 +2,15 @@ library ieee;
 use ieee.std_logic_1164.all;
 library std;
 use std.textio.all;
-library work;
-use work.IITB_RISC_Components.all;
 
 entity Grand_Test is
 end entity;
 architecture Behave of Grand_Test is
 
-    signal start_mc, reset: std_logic;
+    signal load_mem: std_logic;
 signal mem_bit:std_logic:='1';
 signal clk: std_logic:='0';
+signal clk_50: std_logic:='0';
 signal instr_data_in, addr_wr: std_logic_vector(15 downto 0);
 
   function to_string(x: string) return string is
@@ -77,12 +76,23 @@ function to_string_vec(x: std_logic_vector) return string is
     return(ret_var);
   end to_std_logic;
 
+component IITB_RISC is port(
+	load_mem: in std_logic;
+	clk: in std_logic;
+	clk_50: in std_logic;
+	instr_data_in: in std_logic_vector(15 downto 0);
+	addr_wr: in std_logic_vector(15 downto 0);
+	mem_bit: in std_logic
+);
+end component;
+
 begin
  
  clk <= not clk after 50 ns; -- assume 10ns clock.
+ clk_50 <= not clk_50 after 20 ns; --Logic Analyzer Clock 
   process
     variable err_flag : boolean := false;
-    File INFILE: text open read_mode is "TRACEFILE.txt";
+    File INFILE: text open read_mode is "TA_FILE.txt";
     FILE OUTFILE: text  open write_mode is "OUTPUTS.txt";
 	
     ---------------------------------------------------
@@ -117,8 +127,7 @@ begin
 	  instr_data_in <= to_std_logic_vector(instr_var);
       mem_bit <= to_std_logic(mem_bit_var);    
       addr_wr <= to_std_logic_vector(addr_var);
-      start_mc<= not to_std_logic(mem_bit_var);
-      reset <= to_std_logic(mem_bit_var);
+     load_mem <= '0';
 	 
           --------------------------------------
 	     while (true) loop
@@ -145,6 +154,6 @@ begin
   end process;
 
 dut:
-	IITB_RISC port map (start_mc => start_mc, reset => reset, clk => clk, instr_data_in => instr_data_in, addr_wr => addr_wr, mem_bit => mem_bit);
+	IITB_RISC port map (load_mem=>load_mem, clk => clk,clk_50 => clk_50, instr_data_in => instr_data_in, addr_wr => addr_wr, mem_bit => mem_bit);
 
 end Behave;

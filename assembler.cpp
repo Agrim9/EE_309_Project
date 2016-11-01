@@ -32,13 +32,17 @@ char* conv_9(int arg)
 int main()
 {
 string str,reg1,opcode,reg2,reg3,str_9;
-ofstream opfile;
+ofstream opfile,opfile1;
 int address,data_6,data_9;
 char a;
 char* filename=new char(25);
+char* filename2=new char(25);
 cout<<"Enter File Name -> ";
 cin>>filename;
+cout<<"Enter hFile Name -> ";
+cin>>filename2;
 opfile.open(filename);
+opfile1.open(filename2);
 while(true)
   {
   cout<<"Instruction(I) or data(D) ?";
@@ -73,6 +77,7 @@ while(true)
         }
         cout<<"The Op Code is ->"<<opcode<<endl;
         opfile<<opcode<<" ";
+        opfile1<<'\"'<<opcode<<'\"'<<','<<endl;
       }
     if((str=="ADI")||(str=="LW")||(str=="SW")||(str=="BEQ")||(str=="JLR"))
       {
@@ -99,6 +104,7 @@ while(true)
         else opcode+="000000";
         cout<<"The Op Code is ->"<<opcode<<endl;
         opfile<<opcode<<" ";
+        opfile1<<'\"'<<opcode<<'\"'<<','<<endl;
       }
       if((str=="LHI")||(str=="LM")||(str=="SM")||(str=="JAL"))
       {
@@ -113,31 +119,42 @@ while(true)
         cout<<"Enter Reg1(Binary)->";
         cin>>reg1;
         opcode+=reg1;
-        
+
         cout<<"Enter 9 bit immediate data(Decimal) ->";
         cin>>data_9;
         opcode+=conv_9(data_9);
 
         cout<<"The Op Code is ->"<<opcode<<endl;
         opfile<<opcode<<" ";
+        opfile1<<'\"'<<opcode<<'\"'<<','<<endl;
       }
 
     cout<<"Enter Address (Decimal)-> ";
     cin>>address;
     opfile<<conv_16(address)<<endl;
+    if(address==13)   for(int j=1;j<=6;j++) opfile1<<"\"0000000000000000\""<<','<<endl;
+    if(address==21)  opfile1<<"\"0000000000000000\""<<','<<endl;
+    if(address==24)    for(int j=1;j<=4;j++) opfile1<<"\"0000000000000000\""<<','<<endl;
+    if(address==38)    for(int j=1;j<=7;j++) opfile1<<"\"0000000000000000\""<<','<<endl;
   }
   else if(a=='D') {
     opfile<<"1  ";
     cout<<"Enter Data (Decimal)-> ";
     cin>>address;
     opfile<<conv_16(address)<<" ";
+    opfile1<<'\"'<<conv_16(address)<<'\"'<<','<<endl;
 
     cout<<"Enter Address (Decimal)-> ";
     cin>>address;
     opfile<<conv_16(address)<<endl;
+    if(address==13)   for(int j=1;j<=6;j++) opfile1<<"\"0000000000000000\""<<','<<endl;
+    if(address==21)  opfile1<<"\"0000000000000000\""<<','<<endl;
+    if(address==24)    for(int j=1;j<=4;j++) opfile1<<"\"0000000000000000\""<<','<<endl;
+    if(address==38)    for(int j=1;j<=7;j++) opfile1<<"\"0000000000000000\""<<','<<endl;
   }
   else {opfile<<"0 0000000000000000 0000000000000000";break;}
 }
 opfile.close();
+opfile1.close();
 return 1;
 }
