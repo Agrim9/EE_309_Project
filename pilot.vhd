@@ -28,12 +28,13 @@ end component;
 signal load_mem: std_logic;
 signal mem_bit:std_logic:='1';
 signal instr_data_in, addr_wr: std_logic_vector(15 downto 0);
-
+signal rst_bar:std_logic:='1';
 begin
  instr_data_in <= "0000000000000000";
      mem_bit <= '0';    
      addr_wr <= "0000000000000000";
      load_mem <= '1';
+	  rst_bar <= not reset;
 dut:
-	IITB_RISC port map (rst=>reset,load_mem=>load_mem, clk => clk,clk_50 => clk_50, instr_data_in => instr_data_in, addr_wr => addr_wr, mem_bit => mem_bit);
+	IITB_RISC port map (rst=>rst_bar,load_mem=>load_mem, clk => clk,clk_50 => clk_50, instr_data_in => instr_data_in, addr_wr => addr_wr, mem_bit => mem_bit);
 end Behave;
